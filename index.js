@@ -41,6 +41,16 @@ app.get("/info", (request, response) => {
   );
 });
 
+app.get("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  const findPerson = persons.find((e) => e.id === id);
+  if (findPerson) {
+    response.status(200).json(findPerson);
+  } else {
+    response.status(404).end();
+  }
+});
+
 const PORT = 3001;
 
 app.listen(PORT, () => {
