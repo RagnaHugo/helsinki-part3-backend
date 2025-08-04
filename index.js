@@ -61,10 +61,27 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons/", (request, response) => {
   const object = request.body;
+
   const id = Math.floor(Math.random() * 100000) + 1;
-  const contact = { id: id, ...object };
+
+  if (!object.name || !object.number) {
+    return response.status(400).send({ error: "name or number missing" });
+  }
+
+  if (object.name) {
+    const nameFind = persons.find((p) => p.name === object.name);
+    if (nameFind) {
+      return response.status(400).send({ error: "name must be unique" });
+    }
+  }
+
+  const contact = {
+    id: id,
+    name: object.name.trim(),
+    number: object.number.trim(),
+  };
   persons.push(contact);
-  response.status(201).end();
+  response.status(201).json(contact);
 });
 
 const PORT = 3001;
