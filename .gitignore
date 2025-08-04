@@ -1,0 +1,12 @@
+# Ignorar la carpeta modules/
+modules/
+
+# Ignorar archivos temporales
+*.log
+*.tmp
+
+# Ignorar dependencias (ej. para Node.js)
+node_modules/
+
+# Ignorar entornos de desarrollo
+.env
