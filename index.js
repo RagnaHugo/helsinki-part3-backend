@@ -7,22 +7,22 @@ let persons = [
   {
     id: 1,
     name: "Arto Hellas",
-    number: "040-123456",
+    phone: "040-123456",
   },
   {
     id: 2,
     name: "Ada Lovelace",
-    number: "39-44-5323523",
+    phone: "39-44-5323523",
   },
   {
     id: 3,
     name: "Dan Abramov",
-    number: "12-43-234345",
+    phone: "12-43-234345",
   },
   {
     id: 4,
     name: "Mary Poppendieck",
-    number: "39-23-6423122",
+    phone: "39-23-6423122",
   },
 ];
 
@@ -78,7 +78,7 @@ app.post("/api/persons/", (request, response) => {
 
   const id = Math.floor(Math.random() * 100000) + 1;
 
-  if (!object.name || !object.number) {
+  if (!object.name || !object.phone) {
     return response.status(400).send({ error: "name or number missing" });
   }
 
@@ -92,7 +92,7 @@ app.post("/api/persons/", (request, response) => {
   const contact = {
     id: id,
     name: object.name.trim(),
-    number: object.number.trim(),
+    phone: object.phone.trim(),
   };
   persons.push(contact);
   response.status(201).json(contact);
