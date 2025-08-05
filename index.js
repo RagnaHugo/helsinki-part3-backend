@@ -38,6 +38,7 @@ app.use(
   )
 );
 
+app.use(express.static("dist"));
 app.use(express.json());
 
 app.get("/", (request, response) => {
