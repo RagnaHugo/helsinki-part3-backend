@@ -2,29 +2,9 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
+const { ModelContact, mongoose } = require("./models/Person");
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    phone: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    phone: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    phone: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    phone: "39-23-6423122",
-  },
-];
+let persons = [];
 
 app.use(cors());
 
@@ -46,7 +26,9 @@ app.get("/", (request, response) => {
 });
 
 app.get("/api/persons/", (request, response) => {
-  response.json(persons);
+  ModelContact.find({}).then((res) => {
+    response.json(res);
+  });
 });
 
 app.get("/info", (request, response) => {
@@ -58,13 +40,21 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const findPerson = persons.find((e) => e.id === id);
-  if (findPerson) {
-    response.status(200).json(findPerson);
-  } else {
-    response.status(404).end();
-  }
+  const id = request.params.id;
+  ModelContact.find({ _id: id })
+
+    .then((res) => {
+      if (res.length > 0) {
+        response.status(200).json(res);
+      } else {
+        response.status(404).send({ error: "Persona no encontrada" });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+
+      response.status(500).send({ error: "Error en el servidor" });
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -75,8 +65,6 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons/", (request, response) => {
   const object = request.body;
-
-  const id = Math.floor(Math.random() * 100000) + 1;
 
   if (!object.name || !object.phone) {
     return response.status(400).send({ error: "name or number missing" });
@@ -89,13 +77,21 @@ app.post("/api/persons/", (request, response) => {
     }
   }
 
-  const contact = {
-    id: id,
+  const contacto = new ModelContact({
     name: object.name.trim(),
     phone: object.phone.trim(),
-  };
-  persons.push(contact);
-  response.status(201).json(contact);
+  });
+
+  contacto
+    .save()
+    .then((res) => {
+      console.log(res);
+      response.status(201).json(res);
+      mongoose.connection.close();
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 });
 
 const PORT = process.env.PORT || 3001;
