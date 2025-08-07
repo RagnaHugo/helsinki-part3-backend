@@ -36,8 +36,9 @@ if (process.argv.length > 3) {
     });
 } else {
   ModelContact.find({}).then((res) => {
+    console.log("PhoneBook");
     res.forEach((element) => {
-      console.log(element);
+      console.log(`${element.name} ${element.phone}`);
     });
     mongoose.connection.close();
   });
