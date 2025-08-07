@@ -90,7 +90,7 @@ app.post("/api/persons/", (request, response) => {
       mongoose.connection.close();
     })
     .catch((err) => {
-      console.error(err);
+      console.error("error " + err); //se guardan dos veces
     });
 });
 
