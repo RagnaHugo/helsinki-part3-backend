@@ -32,11 +32,13 @@ app.get("/api/persons/", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  response.send(
-    `<p>PhoneBook has info for ${
-      persons.length
-    } people</p><p>${new Date().toString()}</p>`
-  );
+  ModelContact.find({}).then((res) => {
+    response.send(
+      `<p>PhoneBook has info for ${
+        res.length
+      } people</p><p>${new Date().toString()}</p>`
+    );
+  });
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
