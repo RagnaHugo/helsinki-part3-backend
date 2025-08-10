@@ -102,6 +102,19 @@ app.post("/api/persons/", (request, response) => {
     });
 });
 
+app.put("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id;
+  const Person = {
+    name: req.body.name,
+    phone: req.body.phone,
+  };
+  ModelContact.findByIdAndUpdate(id, Person, { new: true })
+    .then((updateNote) => {
+      res.json(updateNote);
+    })
+    .catch((err) => next(err));
+});
+
 // middleware de errores
 const errorHandle = (error, request, response, next) => {
   console.error(error.message);
