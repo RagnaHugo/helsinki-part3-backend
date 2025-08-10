@@ -55,7 +55,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
   ModelContact.findByIdAndDelete(id)
 
@@ -67,9 +67,7 @@ app.delete("/api/persons/:id", (request, response) => {
       }
     })
     .catch((err) => {
-      console.log(err);
-
-      response.status(400).send({ error: "id not valid" });
+      return next(err);
     });
 });
 
