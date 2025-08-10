@@ -39,28 +39,38 @@ app.get("/info", (request, response) => {
   );
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
-  ModelContact.find({ _id: id })
+  ModelContact.findById(id)
 
     .then((res) => {
-      if (res.length > 0) {
+      if (res) {
         response.status(200).json(res);
       } else {
-        response.status(404).send({ error: "Persona no encontrada" });
+        response.status(404).send({ error: "id not found" });
+      }
+    })
+    .catch((err) => {
+      return next(err);
+    });
+});
+
+app.delete("/api/persons/:id", (request, response) => {
+  const id = request.params.id;
+  ModelContact.findByIdAndDelete(id)
+
+    .then((res) => {
+      if (res) {
+        response.status(204).json(res);
+      } else {
+        response.status(404).send({ error: "id not found" });
       }
     })
     .catch((err) => {
       console.log(err);
 
-      response.status(500).send({ error: "Error en el servidor" });
+      response.status(400).send({ error: "id not valid" });
     });
-});
-
-app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((e) => e.id !== id);
-  response.status(204).end();
 });
 
 app.post("/api/persons/", (request, response) => {
@@ -93,6 +103,17 @@ app.post("/api/persons/", (request, response) => {
       console.error("error " + err); //se guardan dos veces
     });
 });
+
+// middleware de errores
+const errorHandle = (error, request, response, next) => {
+  console.error(error.message);
+  if (error.name == "CastError") {
+    return response.status(400).send({ error: "malformtted id" });
+  }
+  next(error);
+};
+
+app.use(errorHandle);
 
 const PORT = process.env.PORT || 3001;
 
