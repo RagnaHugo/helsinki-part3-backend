@@ -2,13 +2,14 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-const { ModelContact, mongoose } = require("./models/Person");
+require("dotenv").config();
+const { ModelContact } = require("./models/Person");
 
 let persons = [];
 
 app.use(cors());
 
-morgan.token("getBody", (request, response) => {
+morgan.token("getBody", (request) => {
   return JSON.stringify(request.body);
 });
 
