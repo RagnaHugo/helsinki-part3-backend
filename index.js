@@ -60,7 +60,6 @@ app.get("/api/persons/:id", (request, response, next) => {
 app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
   ModelContact.findByIdAndDelete(id)
-
     .then((res) => {
       if (res) {
         response.status(204).json(res);
@@ -73,7 +72,7 @@ app.delete("/api/persons/:id", (request, response, next) => {
     });
 });
 
-app.post("/api/persons/", (request, response) => {
+app.post("/api/persons/", (request, response, next) => {
   const object = request.body;
 
   if (!object.name || !object.phone) {
@@ -97,10 +96,9 @@ app.post("/api/persons/", (request, response) => {
     .then((res) => {
       console.log(res);
       response.status(201).json(res);
-      mongoose.connection.close();
     })
     .catch((err) => {
-      console.error("error " + err); //se guardan dos veces
+      return next(err);
     });
 });
 
@@ -110,7 +108,11 @@ app.put("/api/persons/:id", (req, res, next) => {
     name: req.body.name,
     phone: req.body.phone,
   };
-  ModelContact.findByIdAndUpdate(id, Person, { new: true })
+  ModelContact.findByIdAndUpdate(id, Person, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((updateNote) => {
       res.json(updateNote);
     })
@@ -122,7 +124,10 @@ const errorHandle = (error, request, response, next) => {
   console.error(error.message);
   if (error.name == "CastError") {
     return response.status(400).send({ error: "malformtted id" });
+  } else if (error.name == "ValidationError") {
+    return response.status(400).send({ error: error.message });
   }
+
   next(error);
 };
 
